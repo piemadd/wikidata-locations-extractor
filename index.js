@@ -1,6 +1,7 @@
 const fs = require("fs");
 const sqlite3 = require('sqlite3').verbose();
 const spawn = require("child_process").spawn;
+const crypto = require('crypto');
 
 const extractData = (() => {
   //opening database
@@ -39,6 +40,10 @@ const extractData = (() => {
     console.log('rows processed, sorting pages');
 
     let finalPages = {};
+    let index = [];
+
+    if (fs.existsSync('output')) fs.rmSync('output', { recursive: true });
+    fs.mkdirSync('output');
 
     Object.keys(pages).forEach((pageId, i, arr) => {
       const page = pages[pageId];
@@ -59,12 +64,24 @@ const extractData = (() => {
         finalPages[pageId] = [cleaned[0]];
       };
 
-      if (i % 100000 === 0) console.log(`${i}/${arr.length} pages processed`);
+      if (i % 100000 === 0) {
+        console.log(`${i}/${arr.length} pages processed`)
+
+        const fileName = (Math.random() + 1).toString(36).substring(7);
+
+        fs.writeFileSync(`./output/${fileName}.json`, JSON.stringify(finalPages));
+        index.push(fileName);
+        finalPages = JSON.parse(JSON.stringify({}));
+      }
     });
+    const fileName = (Math.random() + 1).toString(36).substring(7);
 
-    console.log('pages sorted, writing to file');
+    fs.writeFileSync(`./output/${fileName}.json`, JSON.stringify(finalPages));
+    index.push(fileName);
 
-    fs.writeFileSync('./data.json', JSON.stringify(finalPages));
+    fs.writeFileSync(`./output/index.json`, JSON.stringify(index));
+
+    //fs.writeFileSync('./data.json', JSON.stringify(finalPages));
   });
 })
 
