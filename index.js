@@ -39,7 +39,7 @@ const extractData = (() => {
 
     console.log('rows processed, sorting pages');
 
-    let finalPages = {};
+    let finalPages = [];
     let index = [];
 
     if (fs.existsSync('output')) fs.rmSync('output', { recursive: true });
@@ -55,23 +55,23 @@ const extractData = (() => {
       });
 
       const cleaned = sorted.map((item) => {
-        return [Number(item.lat), Number(item.lon), item.id];
+        return [Number(item.lat), Number(item.lon), Number(pageId)];
       });
 
       if (sorted[0].primary === '0') {
-        finalPages[pageId] = cleaned;
+        finalPages.push(...cleaned);
       } else {
-        finalPages[pageId] = [cleaned[0]];
+        finalPages.push(cleaned[0]);
       };
 
-      if (i % 100000 === 0) {
+      if (i % 100000 === 0 && i !== 0) {
         console.log(`${i}/${arr.length} pages processed`)
 
         const fileName = (Math.random() + 1).toString(36).substring(7);
 
         fs.writeFileSync(`./output/${fileName}.json`, JSON.stringify(finalPages));
         index.push(fileName);
-        finalPages = JSON.parse(JSON.stringify({}));
+        finalPages = JSON.parse(JSON.stringify([]));
       }
     });
     const fileName = (Math.random() + 1).toString(36).substring(7);
