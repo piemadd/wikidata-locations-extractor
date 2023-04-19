@@ -45,6 +45,7 @@ const extractData = (() => {
     if (fs.existsSync('output')) fs.rmSync('output', { recursive: true });
     fs.mkdirSync('output');
 
+    let chunkIndex = 0;
     Object.keys(pages).forEach((pageId, i, arr) => {
       const page = pages[pageId];
       const sorted = page.sort((a, b) => {
@@ -67,14 +68,16 @@ const extractData = (() => {
       if (i % 100000 === 0 && i !== 0) {
         console.log(`${i}/${arr.length} pages processed`)
 
-        const fileName = (Math.random() + 1).toString(36).substring(7);
+        //const fileName = (Math.random() + 1).toString(36).substring(7);
+        const fileName = `chunk_${chunkIndex}`;
 
         fs.writeFileSync(`./output/${fileName}.json`, JSON.stringify(finalPages));
         index.push(fileName);
+        chunkIndex++;
         finalPages = JSON.parse(JSON.stringify([]));
       }
     });
-    const fileName = (Math.random() + 1).toString(36).substring(7);
+    const fileName = `chunk_${chunkIndex}`;
 
     fs.writeFileSync(`./output/${fileName}.json`, JSON.stringify(finalPages));
     index.push(fileName);
