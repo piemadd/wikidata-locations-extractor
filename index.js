@@ -65,7 +65,7 @@ const extractData = (() => {
         finalPages.push(cleaned[0]);
       };
 
-      if (i % 100000 === 0 && i !== 0) {
+      if (i % 50000 === 0 && i !== 0) {
         console.log(`${i}/${arr.length} pages processed`)
 
         //const fileName = (Math.random() + 1).toString(36).substring(7);
